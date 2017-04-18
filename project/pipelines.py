@@ -3,7 +3,6 @@
 @author: Alfred
 """
 import csv
-from datetime import datetime as dt
 
 
 class CsvPipeline(object):
@@ -16,26 +15,18 @@ class CsvPipeline(object):
         """
         Get item fields and file path through crawler
         """
+        return cls(crawler.settings)
 
-        path = crawler.settings.get('DATA_PATH')
-        dir_name = crawler.settings.get('DIR_NAME')
-        site = crawler.settings.get('SITE')
-
-        flds = crawler.settings.get('CRAWL_DICT')['field_to_export']
-
-        return cls(path, dir_name, site, flds)
-
-    def __init__(self,path, dir_name, site, flds):
-        self.flds = flds
-        file_path = '%s/%s/%s_%s.csv' \
-            % (path, dir_name, site, dt.today().strftime('%Y-%m-%d'))
-        self.writer = csv.writer(open(file_path, 'a'))
+    def __init__(self, settings):
+        self.flds = settings.get('field_to_export')
+        self.writer = csv.writer(
+            open(settings['FILE_PATH'], 'a', encoding='utf-8')
+        )
 
     def process_item(self, item, spider):
         """
         write file
         """
-
         row = []
         for fld in self.flds:
             try:
