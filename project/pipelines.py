@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 """
+Created on Fri Apr 18 17:01:10 2017
 @author: Alfred
 """
 import csv
 
+#from utils.db_con import DBcon
 
-class CsvPipeline(object):
+
+class CsvPipeline():
     """
     Pipeline to csv file
     """
@@ -20,7 +23,7 @@ class CsvPipeline(object):
     def __init__(self, settings):
         self.flds = settings.get('field_to_export')
         self.writer = csv.writer(
-            open(settings['FILE_PATH'], 'a', encoding='utf-8')
+            open(settings['FILE_PATH'], 'a', encoding='utf-8', newline='')
         )
 
     def process_item(self, item, spider):
@@ -36,3 +39,26 @@ class CsvPipeline(object):
             except:
                 row.append(item[fld])
         self.writer.writerow(row)
+
+
+class SQLite3Pipeline():
+    """
+    1
+    """
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        """
+        1
+        """
+        return cls(crawler.settings)
+
+    def __init__(self, settings):
+        self.tbl = settings.get('TBL')
+        self.db = DBcon()
+
+    def process_item(self, item, spider):
+        """
+        write file
+        """
+        self.db.sqlite_insert(self.tbl, [item])
